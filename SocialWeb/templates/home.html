@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+
+<body>
+    welcome{{request.user}}<br>
+   
+    {%if request.user.profile%}
+        <a href="{%url 'profile-view'%}">ViewProfile</a><br>
+        <a href="{%url 'profile-edit' request.user.profile.id%}">updateprofile</a><br>
+    {%else%}
+        <a href="{%url 'profile-add'%}">add profile</a><br>
+    {%endif%}
+    <a href="{% url 'logout'%}">logout</a><br>
+    <!--post section-->
+    <div class="container">
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {%csrf_token%}
+                    {{form.as_p}}
+                    <button type="submit" >Add</button>
+                </form>
+            </div>
+            <div class="col-4"></div>
+        </div>
+    </div>
+    <!--post section end-->
+ 
+    
+    <!--post list-->
+    {%for p in posts%}
+       <div>
+        
+        {%if p.image%}
+            <img src="{{p.image.url}}" alt="">
+        {%endif%}<br>
+        <a href="{% url 'like' p.id%}">Like</a>{{p.like_count}}
+        <a href="{%url 'like-remove' p.id%}">Dislike</a><br>
+        {{p.description}}
+        posted by {{p.user}} on {{p.created_date}}<br>
+        
+       </div>
+   
+       <div>
+        post your comment
+        <form action="{% url 'add-comment' p.id%}" method="post">
+            {%csrf_token%}
+            <input type="text" name="comment" placeholder="comments">
+            <button type="submit">Add</button>
+        </form>
+       </div>
+       <!--comment list-->
+    <h2>Comment</h2>
+    {%for c in p.post_comment%}
+    <div>
+        {{c.comment}} posted by {{c.user}} on {{c.created_date}}
+        <a href="{%url 'add-like' c.id%}">Like</a>{{c.likes_count}}
+        <a href="{%url 'remove-like' c.id%}">Dislike</a><br>
+        <a href="{%url 'delete' c.id%}">Delete</a>
+        
+    </div>
+    {%endfor%}
+    <!--commrnt kist end-->
+       <hr>
+    {%endfor%}
+    <!--post list end-->
+
+
+
+</body>
+
+</html>
